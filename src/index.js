@@ -6,7 +6,7 @@ function Square(props) {
   return (
     <button 
       className="square" 
-      onClick={props.onClick} //calls this.handleClick(i) from 'Board' when clicked.
+      onClick={props.onClick}
     >
       {props.value}
     </button>
@@ -14,11 +14,12 @@ function Square(props) {
 }
 
 class Board extends React.Component {
+  
   renderSquare(i) {
     return (
       <Square 
         value={this.props.squares[i]} //pass a prop called 'value' to the child component 'Square'
-        onClick={() => this.props.onClick(i)} //pass a prop 'onClick' which is a function
+        onClick={() => this.props.onClick(i)} //call the handleClick function from the parent's component 
       />
     ); 
   }
@@ -52,7 +53,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      history: [{
+      history: [{ //array which represents all board states
         squares: Array(9).fill(null),
       }],
       stepNumber: 0,
@@ -85,12 +86,18 @@ class Game extends React.Component {
   }
 
   render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
+    const history = this.state.history; //array of objects which contains the fields (array) 1)
+    const current = history[this.state.stepNumber]; //1 Object which is the current field
     const winner = calculateWinner(current.squares);
 
     //for each move, we create a list item <li> which cointains a button
+    /**
+     * Using the map method, 
+     * we can map our history of moves to React elements representing buttons on the screen, 
+     * and display a list of buttons to “jump” to past moves.
+     */
     const moves = history.map((step, move) => {
+      console.log(step, move);
       const desc = move ?
         'Go to move #' + move :
         'Go to game start';
@@ -108,6 +115,7 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
+    //pass 2 props (squares and onClick)
     return (
       <div className="game">
         <div className="game-board">
@@ -151,3 +159,34 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+/**
+ * 1)
+ * history = [
+  // Before first move
+  {
+    squares: [
+      null, null, null,
+      null, null, null,
+      null, null, null,
+    ]
+  },
+  // After first move
+  {
+    squares: [
+      null, null, null,
+      null, 'X', null,
+      null, null, null,
+    ]
+  },
+  // After second move
+  {
+    squares: [
+      null, null, null,
+      null, 'X', null,
+      null, null, 'O',
+    ]
+  },
+  // ...
+]
+ */
